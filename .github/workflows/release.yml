@@ -1,0 +1,48 @@
+---
+name: Release Charts
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - 'master'
+  push:
+    branches:
+      - master
+    tags:
+      - 'v*'
+    paths:
+      - charts/**
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Configure Git
+        run: |
+          git config user.name "$GITHUB_ACTOR"
+          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+
+      - name: Install Helm
+        uses: azure/setup-helm@v3
+        with:
+          version: v3.10.1
+
+      - name: Add Helm dependency repos
+        run: |
+          helm repo add bitnami https://charts.bitnami.com/bitnami
+          helm repo add grafana https://grafana.github.io/helm-charts
+          helm repo add prometheus https://prometheus-community.github.io/helm-charts
+          helm repo update
+
+      - name: Run chart-releaser
+        uses: helm/chart-releaser-action@v1.4.1
+        with:
+          charts_dir: charts
+        env:
+          CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"

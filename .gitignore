@@ -1,5 +1,5 @@
-cert-manager-webhook-bunny
-testdata/bunny/config.json
-testdata/bunny/bunny-credentials.yaml
+/cert-manager-webhook-bunny
+/testdata/bunny/config.json
+/testdata/bunny/bunny-credentials.yaml
 _out
 _test
